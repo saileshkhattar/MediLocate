@@ -1,24 +1,24 @@
-import React from "react";
-import { Button, Typography, Container } from "@mui/material";
-import axios from "axios";
-import { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import UserHome from "./Screens/User/UserHome"
+import UserAuth from "./Screens/User/UserLogin"
+import PharmacyAuth from "./Screens/Pharamcy/PharmacyLogin";
+import Add from "./Screens/Admin/Add"
+import Pharmacyhome from "./Screens/Pharamcy/PharamcyHome";
+import AddProductForm from "./Components/AddMedicine";
+
 
 function App() {
-  useEffect(() => {
-    axios
-      .get("http://localhost:5000/")
-      .then((res) => console.log(res.data))
-      .catch((err) => console.error(err));
-  }, []);
   return (
-    <Container>
-      <Typography variant="h3" gutterBottom>
-        MediLocate
-      </Typography>
-      <Button variant="contained" color="primary">
-        Test MUI Button
-      </Button>
-    </Container>
+    <Router>
+      <Routes>
+        <Route path ="user-auth" element ={<UserAuth />} />
+        <Route path ="pharmacy-auth" element ={<PharmacyAuth />} />
+        <Route path = "user-home" element={<UserHome />} />
+        <Route path = "admin" element={<Add />} />
+        <Route path = "pharmacy-home" element={<Pharmacyhome />} />
+        <Route path = "add" element={<AddProductForm />} />
+      </Routes>
+    </Router>
   );
 }
 

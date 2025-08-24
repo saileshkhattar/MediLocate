@@ -18,6 +18,15 @@
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+
+
+html, body, #root{
+  width:100%;
+  height:100vh;
+  margin:0px;
+  padding:0px;
+}
+
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);

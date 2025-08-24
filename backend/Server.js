@@ -1,16 +1,27 @@
 const express = require ("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const cookieParser = require("cookie-parser")
 require("dotenv").config();
+
+const AuthRouter = require("./Routers/AuthRouter")
+const PharmacyRouter = require("./Routers/PharmacyRouter")
+const ProfileRouter = require("./Routers/ProfileRouter")
 
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors());
+app.use("/uploads", express.static("uploads"));
 
 app.get("/", (req, res)=>{
     res.send("Backend Running");
 });
+
+app.use("/auth", AuthRouter)
+app.use("/pharmacy", PharmacyRouter);
+app.use("/profile", ProfileRouter)
 
 const PORT = 5000;
 mongoose
