@@ -11,15 +11,24 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
-  Link as MuiLink
+  Link as MuiLink,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../Context/AuthContext";
 
-const Navbar = ({ isLoggedIn, role, onLogout }) => {
+const Navbar = () => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
+
+  const handleLogout = () => {
+    console.log("logginout");
+    logout(); 
+    navigate("/user-auth"); // redirect to login page
+  };
 
   const navItems = [
     { label: "Home", path: "/" },
@@ -30,10 +39,23 @@ const Navbar = ({ isLoggedIn, role, onLogout }) => {
   return (
     <>
       <AppBar position="static">
-        <Toolbar sx={{ justifyContent: "space-between", minHeight:720 }}>
-          <MuiLink component={Link} to="/" underline="hover" color="inherit" variant="h4">
-                MediLocate
-            </MuiLink>
+        <Toolbar sx={{ justifyContent: "space-between", minHeight: 720 }}>
+          <MuiLink
+            component={Link}
+            to="/"
+            underline="hover"
+            color="inherit"
+            variant="h4"
+          >
+            MediLocate
+          </MuiLink>
+          <div>
+            {user ? (
+              <h2>Welcome {user.name}</h2> // 👈 user is set
+            ) : (
+              <h2>No user logged in</h2> // 👈 user is null
+            )}
+          </div>
 
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {navItems.map((item) => (
@@ -47,12 +69,12 @@ const Navbar = ({ isLoggedIn, role, onLogout }) => {
               </Button>
             ))}
 
-            {isLoggedIn ? (
-              <Button color="inherit" onClick={onLogout}>
+            {user ? (
+              <Button color="inherit" onClick={handleLogout}>
                 Logout
               </Button>
             ) : (
-              <Button color="inherit" component={Link} to="/login">
+              <Button color="inherit" component={Link} to="/user-auth">
                 Login
               </Button>
             )}
@@ -87,9 +109,9 @@ const Navbar = ({ isLoggedIn, role, onLogout }) => {
               </ListItem>
             ))}
 
-            {isLoggedIn ? (
+            {user ? (
               <ListItem disablePadding>
-                <ListItemButton onClick={onLogout}>
+                <ListItemButton onClick={handleLogout}>
                   <ListItemText primary="Logout" />
                 </ListItemButton>
               </ListItem>

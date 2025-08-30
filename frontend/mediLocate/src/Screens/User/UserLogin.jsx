@@ -9,7 +9,8 @@ const UserAuth = () => (
       login: "http://localhost:5000/auth/user/login",
       signup: "http://localhost:5000/auth/user/register",
     }}
-    redirect="/home"
+    redirect={{register: "/user-auth",
+              login : "/user-home"}}
     switchText="Are you a pharmacy?"
     switchLink="/pharmacy-auth"
   />

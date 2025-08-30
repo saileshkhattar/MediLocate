@@ -1,24 +1,28 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import UserHome from "./Screens/User/UserHome"
-import UserAuth from "./Screens/User/UserLogin"
+import UserHome from "./Screens/User/UserHome";
+import UserAuth from "./Screens/User/UserLogin";
 import PharmacyAuth from "./Screens/Pharamcy/PharmacyLogin";
-import Add from "./Screens/Admin/Add"
+import Add from "./Screens/Admin/Add";
 import Pharmacyhome from "./Screens/Pharamcy/PharamcyHome";
 import AddProductForm from "./Components/AddMedicine";
-
+import ProfileCard from "./Components/CompleteProfileCard";
+import { AuthProvider } from "./Context/AuthContext";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path ="user-auth" element ={<UserAuth />} />
-        <Route path ="pharmacy-auth" element ={<PharmacyAuth />} />
-        <Route path = "user-home" element={<UserHome />} />
-        <Route path = "admin" element={<Add />} />
-        <Route path = "pharmacy-home" element={<Pharmacyhome />} />
-        <Route path = "add" element={<AddProductForm />} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="user-auth" element={<UserAuth />} />
+          <Route path="pharmacy-auth" element={<PharmacyAuth />} />
+          <Route path="user-home" element={<UserHome />} />
+          <Route path="admin" element={<Add />} />
+          <Route path="pharmacy-home" element={<Pharmacyhome />} />
+          <Route path="add" element={<AddProductForm />} />
+          <Route path="profile" element={<ProfileCard />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   TextField,
@@ -13,7 +13,8 @@ import axios from "axios";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import logo from "../assets/logo.png";
 import bgImage from "../assets/logo-bg.png";
-
+import { useLocation } from "react-router-dom";
+import { useAuth } from "../Context/AuthContext";
 
 const AuthForm = ({
   title,
@@ -25,8 +26,17 @@ const AuthForm = ({
   switchLink,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [tab, setTab] = useState(0); // 0 = Login, 1 = Signup
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "", name: "" });
+  const { login } = useAuth();
+  const[error, setError] = useState("")
+
+  useEffect(() => {
+    if (location.state?.tab !== undefined) {
+      setTab(location.state.tab);
+    }
+  }, [location.state]);
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -34,23 +44,24 @@ const AuthForm = ({
   const handleSubmit = async () => {
     try {
       if (tab === 0) {
-        // Login
-        const res = await axios.post(apiEndpoints.login, {
-          email: form.email,
-          password: form.password,
-        });
-        console.log("Login success:", res.data);
-        navigate(redirect);
+        const user = await login(form.email, form.password, apiEndpoints.login);
+        console.log("Login success:");
+        setError("")
+        navigate(redirect.login);
       } else {
-        // Signup
         const signupData = {
           ...form,
         };
+        console.log(signupData);
         const res = await axios.post(apiEndpoints.signup, signupData);
-        console.log("Signup success:", res.data);
+        console.log("Signup success:");
+        alert("🎉 Registration successful! Please log in to continue.");
+        navigate(redirect.register, { state: { tab: 0 } });
+        setError("")
       }
     } catch (err) {
-      console.error(err.response?.data || err.message);
+      const message = err.response?.data?.message || err.response?.data || err.message;
+      setError(message)
     }
   };
 
@@ -144,6 +155,11 @@ const AuthForm = ({
             {tab === 0 ? "Login" : "Signup"}
           </Button>
         </Box>
+
+        {error !==""?(<Box mt={2} textAlign="center">
+        <Typography variant="h8" color="red">
+          {error}
+        </Typography></Box>):(<></>)}
 
         {/* Switch link */}
         <Box mt={2} textAlign="center">

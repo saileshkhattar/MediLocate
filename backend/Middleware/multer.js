@@ -3,14 +3,18 @@ const path = require("path");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/");
+    cb(null, "uploads/"); // flat folder for all images
   },
   filename: (req, file, cb) => {
-    const pharmacyName = req.user?.pharmacyName?.replace(/\s+/g, "_") || "unknown";
-    const productName = req.body.productName?.replace(/\s+/g, "_") || "product";
+    const role = req.user?.role || "unknown";
+    const name = role === "pharmacy"
+      ? req.user?.req.body.name?.replace(/\s+/g, "_") || "pharmacy"
+      : req.user?.req.body.pharmacyName?.replace(/\s+/g, "_") || "user";
+
     const ext = path.extname(file.originalname);
-    const uniqueSuffix = Date.now(); 
-    cb(null, `${pharmacyName}_${productName}_${uniqueSuffix}${ext}`);
+    const uniqueSuffix = Date.now();
+
+    cb(null, `${role}_${name}_${uniqueSuffix}${ext}`);
   },
 });
 

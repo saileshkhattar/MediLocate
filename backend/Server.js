@@ -2,6 +2,7 @@ const express = require ("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser")
+const path = require("path")
 require("dotenv").config();
 
 const AuthRouter = require("./Routers/AuthRouter")
@@ -12,8 +13,12 @@ const ProfileRouter = require("./Routers/ProfileRouter")
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
-app.use("/uploads", express.static("uploads"));
+app.use(cors({
+  origin: "http://localhost:5173", 
+  credentials: true               
+}));
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use("/public", express.static(path.join(process.cwd(), "public")));
 
 app.get("/", (req, res)=>{
     res.send("Backend Running");

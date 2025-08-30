@@ -1,6 +1,6 @@
 import Footer from "../../Components/Footer";
 import Navbar from "../../Components/Navbar";
-import React, { useState } from "react";
+import CompleteProfileCard from"../../Components/CompleteProfileCard"
 import {
   AppBar,
   Toolbar,
@@ -114,6 +114,8 @@ function UserHome() {
       </Box>
 
       <Footer />
+
+      <CompleteProfileCard />
     </>
   );
 }
