@@ -7,6 +7,8 @@ import Pharmacyhome from "./Screens/Pharamcy/PharamcyHome";
 import AddProductForm from "./Components/AddMedicine";
 import ProfileCard from "./Components/CompleteProfileCard";
 import { AuthProvider } from "./Context/AuthContext";
+import AllProducts from "./Screens/Pharamcy/allProducts"
+import Result from "./Screens/User/Results"
 
 function App() {
   return (
@@ -18,8 +20,8 @@ function App() {
           <Route path="user-home" element={<UserHome />} />
           <Route path="admin" element={<Add />} />
           <Route path="pharmacy-home" element={<Pharmacyhome />} />
-          <Route path="add" element={<AddProductForm />} />
-          <Route path="profile" element={<ProfileCard />} />
+          <Route path="all-products" element={<AllProducts />} />
+          <Route path="user-search" element={<Result />} />
         </Routes>
       </Router>
     </AuthProvider>

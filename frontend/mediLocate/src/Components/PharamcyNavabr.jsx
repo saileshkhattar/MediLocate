@@ -17,29 +17,29 @@ import {
   Menu,
   MenuItem,
   Divider,
-  TextField,
-  InputAdornment,
   Container,
   Chip,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import PersonIcon from "@mui/icons-material/Person";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import FavoriteIcon from "@mui/icons-material/Favorite";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import PendingActionsIcon from "@mui/icons-material/PendingActions";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import AnalyticsIcon from "@mui/icons-material/Analytics";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import SettingsIcon from "@mui/icons-material/Settings";
+import AddIcon from "@mui/icons-material/Add";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 
-const Navbar = () => {
+const PharmacyNavbar = ({ onAddMedicine }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [accountMenuAnchor, setAccountMenuAnchor] = useState(null);
-  const [searchValue, setSearchValue] = useState("");
+  const [notificationCount] = useState(5); // You can make this dynamic
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
   
@@ -53,21 +53,20 @@ const Navbar = () => {
     navigate("/user-auth");
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    // Handle search logic here
-    console.log("Searching for:", searchValue);
-  };
-
   const navItems = [
-    { label: "Home", path: "/" },
-    { label: "Products", path: "/products" },
-    { label: "About", path: "/about" },
-    { label: "Contact", path: "/contact" },
+    { label: "Dashboard", path: "/pharmacy-home", icon: <DashboardIcon /> },
+    { label: "All Products", path: "/pharmacy/products", icon: <InventoryIcon /> },
+    { label: "New Orders", path: "/pharmacy/orders/new", icon: <AssignmentIcon /> },
+    { label: "Pending Orders", path: "/pharmacy/orders/pending", icon: <PendingActionsIcon /> },
+    { label: "Analytics", path: "/pharmacy/analytics", icon: <AnalyticsIcon /> },
   ];
 
   const getUserInitial = () => {
-    return user?.name ? user.name.charAt(0).toUpperCase() : "U";
+    return user?.pharmacyName ? user.pharmacyName.charAt(0).toUpperCase() : user?.name?.charAt(0).toUpperCase() || "P";
+  };
+
+  const getDisplayName = () => {
+    return user?.pharmacyName || user?.name || "Pharmacy";
   };
 
   return (
@@ -87,7 +86,7 @@ const Navbar = () => {
             <Box display="flex" alignItems="center">
               <MuiLink
                 component={Link}
-                to="/"
+                to="/pharmacy-home"
                 underline="none"
                 sx={{
                   color: 'white',
@@ -112,69 +111,25 @@ const Navbar = () => {
                     M
                   </Typography>
                 </Box>
-                <Typography 
-                  variant="h5" 
-                  fontWeight="700"
-                  sx={{ 
-                    background: 'linear-gradient(45deg, #fff 30%, #e3f2fd 90%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                  }}
-                >
-                  MediLocate
-                </Typography>
+                <Box>
+                  <Typography 
+                    variant="h6" 
+                    fontWeight="700"
+                    sx={{ 
+                      background: 'linear-gradient(45deg, #fff 30%, #e3f2fd 90%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                      lineHeight: 1.2
+                    }}
+                  >
+                    MediLocate
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.7rem' }}>
+                    Pharmacy Portal
+                  </Typography>
+                </Box>
               </MuiLink>
-            </Box>
-
-            {/* Search Bar - Desktop */}
-            <Box 
-              component="form"
-              onSubmit={handleSearch}
-              sx={{ 
-                display: { xs: "none", md: "flex" },
-                flex: 1,
-                justifyContent: 'center',
-                mx: 4,
-                maxWidth: 500
-              }}
-            >
-              <TextField
-                fullWidth
-                size="small"
-                placeholder="Search medicines, supplements..."
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                sx={{
-                  bgcolor: 'rgba(255,255,255,0.15)',
-                  borderRadius: '25px',
-                  backdropFilter: 'blur(10px)',
-                  '& fieldset': { 
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    borderRadius: '25px',
-                  },
-                  '& .MuiInputBase-input': {
-                    color: 'white',
-                    '&::placeholder': {
-                      color: 'rgba(255,255,255,0.7)',
-                      opacity: 1,
-                    },
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'rgba(255,255,255,0.5)',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'rgba(255,255,255,0.7)',
-                  },
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon sx={{ color: 'rgba(255,255,255,0.7)' }} />
-                    </InputAdornment>
-                  ),
-                }}
-              />
             </Box>
 
             {/* Desktop Navigation */}
@@ -185,6 +140,7 @@ const Navbar = () => {
                   color="inherit"
                   component={Link}
                   to={item.path}
+                  startIcon={item.icon}
                   sx={{
                     borderRadius: '12px',
                     px: 2,
@@ -200,55 +156,53 @@ const Navbar = () => {
                   {item.label}
                 </Button>
               ))}
+            </Box>
 
-              {/* Action Icons */}
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 2 }}>
-                <IconButton 
-                  color="inherit"
-                  sx={{
-                    borderRadius: '12px',
-                    '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' }
-                  }}
-                >
-                  <Badge badgeContent={2} color="error">
-                    <FavoriteIcon />
-                  </Badge>
-                </IconButton>
+            {/* Action Buttons & User Section */}
+            <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: 'center', gap: 1 }}>
+              {/* Quick Add Medicine Button */}
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={onAddMedicine}
+                sx={{
+                  bgcolor: 'rgba(255,255,255,0.2)',
+                  color: 'white',
+                  borderRadius: '12px',
+                  px: 2,
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  '&:hover': {
+                    bgcolor: 'rgba(255,255,255,0.3)',
+                    transform: 'translateY(-1px)',
+                  },
+                }}
+              >
+                Add Medicine
+              </Button>
 
-                <IconButton 
-                  color="inherit"
-                  sx={{
-                    borderRadius: '12px',
-                    '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' }
-                  }}
-                >
-                  <Badge badgeContent={3} color="error">
-                    <ShoppingCartIcon />
-                  </Badge>
-                </IconButton>
-
-                <IconButton 
-                  color="inherit"
-                  sx={{
-                    borderRadius: '12px',
-                    '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' }
-                  }}
-                >
-                  <Badge badgeContent={1} color="error">
-                    <NotificationsIcon />
-                  </Badge>
-                </IconButton>
-              </Box>
+              {/* Notifications */}
+              <IconButton 
+                color="inherit"
+                sx={{
+                  borderRadius: '12px',
+                  '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' }
+                }}
+              >
+                <Badge badgeContent={notificationCount} color="error">
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
 
               {/* User Section */}
               {user ? (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, ml: 2 }}>
-                  <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-                    <Typography variant="body2" sx={{ opacity: 0.8, fontSize: '0.85rem' }}>
-                      Welcome back
+                  <Box sx={{ display: { xs: 'none', lg: 'block' }, textAlign: 'right' }}>
+                    <Typography variant="body2" sx={{ opacity: 0.8, fontSize: '0.75rem' }}>
+                      {user.role === 'pharmacy' ? 'Pharmacy' : 'Welcome'}
                     </Typography>
-                    <Typography variant="body1" fontWeight="600">
-                      {user.name}
+                    <Typography variant="body1" fontWeight="600" sx={{ fontSize: '0.9rem' }}>
+                      {getDisplayName()}
                     </Typography>
                   </Box>
                   <IconButton
@@ -275,41 +229,23 @@ const Navbar = () => {
                   </IconButton>
                 </Box>
               ) : (
-                <Box sx={{ display: 'flex', gap: 1, ml: 2 }}>
-                  <Button
-                    component={Link}
-                    to="/user-auth"
-                    variant="outlined"
-                    sx={{
-                      borderColor: 'rgba(255,255,255,0.3)',
-                      color: 'white',
-                      borderRadius: '12px',
-                      px: 3,
-                      '&:hover': {
-                        borderColor: 'rgba(255,255,255,0.5)',
-                        bgcolor: 'rgba(255,255,255,0.1)',
-                      },
-                    }}
-                  >
-                    Login
-                  </Button>
-                  <Button
-                    component={Link}
-                    to="/user-auth"
-                    variant="contained"
-                    sx={{
-                      bgcolor: 'rgba(255,255,255,0.2)',
-                      color: 'white',
-                      borderRadius: '12px',
-                      px: 3,
-                      '&:hover': {
-                        bgcolor: 'rgba(255,255,255,0.3)',
-                      },
-                    }}
-                  >
-                    Sign Up
-                  </Button>
-                </Box>
+                <Button
+                  component={Link}
+                  to="/user-auth"
+                  variant="outlined"
+                  sx={{
+                    borderColor: 'rgba(255,255,255,0.3)',
+                    color: 'white',
+                    borderRadius: '12px',
+                    px: 3,
+                    '&:hover': {
+                      borderColor: 'rgba(255,255,255,0.5)',
+                      bgcolor: 'rgba(255,255,255,0.1)',
+                    },
+                  }}
+                >
+                  Login
+                </Button>
               )}
             </Box>
 
@@ -340,7 +276,7 @@ const Navbar = () => {
           sx: {
             borderRadius: '12px',
             mt: 1,
-            minWidth: 200,
+            minWidth: 220,
             '& .MuiMenuItem-root': {
               borderRadius: '8px',
               mx: 1,
@@ -349,9 +285,22 @@ const Navbar = () => {
           },
         }}
       >
+        <Box sx={{ px: 2, py: 1, borderBottom: '1px solid #f0f0f0' }}>
+          <Typography variant="subtitle2" fontWeight="600">
+            {getDisplayName()}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {user?.email}
+          </Typography>
+        </Box>
+        
         <MenuItem onClick={handleAccountMenuClose}>
           <AccountCircleIcon sx={{ mr: 2 }} />
-          Profile
+          Profile Settings
+        </MenuItem>
+        <MenuItem onClick={handleAccountMenuClose}>
+          <SettingsIcon sx={{ mr: 2 }} />
+          Pharmacy Settings
         </MenuItem>
         <MenuItem onClick={handleAccountMenuClose}>
           <DashboardIcon sx={{ mr: 2 }} />
@@ -378,50 +327,29 @@ const Navbar = () => {
         }}
       >
         <Box sx={{ p: 3 }}>
-          <Typography variant="h6" fontWeight="bold" mb={2}>
+          <Typography variant="h6" fontWeight="bold" mb={1}>
             MediLocate
+          </Typography>
+          <Typography variant="caption" sx={{ opacity: 0.8 }}>
+            Pharmacy Portal
           </Typography>
           
           {user && (
-            <Box sx={{ mb: 3, p: 2, bgcolor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }}>
+            <Box sx={{ mt: 2, p: 2, bgcolor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }}>
               <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                Welcome
+                {user.role === 'pharmacy' ? 'Pharmacy' : 'Welcome'}
               </Typography>
               <Typography variant="h6" fontWeight="600">
-                {user.name}
+                {getDisplayName()}
               </Typography>
+              <Chip 
+                icon={<NotificationsIcon />}
+                label={`${notificationCount} notifications`}
+                size="small"
+                sx={{ mt: 1, bgcolor: 'rgba(255,255,255,0.2)', color: 'white' }}
+              />
             </Box>
           )}
-
-          {/* Mobile Search */}
-          <TextField
-            fullWidth
-            size="small"
-            placeholder="Search..."
-            sx={{
-              mb: 3,
-              bgcolor: 'rgba(255,255,255,0.15)',
-              borderRadius: '12px',
-              '& fieldset': { 
-                border: '1px solid rgba(255,255,255,0.3)',
-                borderRadius: '12px',
-              },
-              '& .MuiInputBase-input': {
-                color: 'white',
-                '&::placeholder': {
-                  color: 'rgba(255,255,255,0.7)',
-                  opacity: 1,
-                },
-              },
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: 'rgba(255,255,255,0.7)' }} />
-                </InputAdornment>
-              ),
-            }}
-          />
         </Box>
 
         <List sx={{ px: 2 }}>
@@ -436,10 +364,28 @@ const Navbar = () => {
                   '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' },
                 }}
               >
+                <Box sx={{ mr: 2 }}>{item.icon}</Box>
                 <ListItemText primary={item.label} />
               </ListItemButton>
             </ListItem>
           ))}
+
+          <ListItem disablePadding sx={{ mb: 1 }}>
+            <ListItemButton 
+              onClick={() => {
+                onAddMedicine();
+                handleDrawerToggle();
+              }}
+              sx={{
+                borderRadius: '12px',
+                bgcolor: 'rgba(255,255,255,0.2)',
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
+              }}
+            >
+              <AddIcon sx={{ mr: 2 }} />
+              <ListItemText primary="Add Medicine" />
+            </ListItemButton>
+          </ListItem>
 
           <Divider sx={{ my: 2, borderColor: 'rgba(255,255,255,0.3)' }} />
 
@@ -471,8 +417,8 @@ const Navbar = () => {
                   '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' },
                 }}
               >
-                <PersonIcon sx={{ mr: 2 }} />
-                <ListItemText primary="Login / Sign Up" />
+                <AccountCircleIcon sx={{ mr: 2 }} />
+                <ListItemText primary="Login" />
               </ListItemButton>
             </ListItem>
           )}
@@ -482,4 +428,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default PharmacyNavbar;

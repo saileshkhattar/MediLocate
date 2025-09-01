@@ -115,9 +115,9 @@ exports.loginPharmacy = async (req, res) => {
       message: "Login successful",
       user: {
         name:pharmacy.name,
-        id: pharmacy._id,
+        _id: pharmacy._id,
         email: pharmacy.email,
-        complete : pharmacy.isProfileComplete,
+        isProfileComplete : pharmacy.isProfileComplete,
         role:pharmacy.role
       },
     });
@@ -130,14 +130,14 @@ exports.loginPharmacy = async (req, res) => {
 exports.findbytoken = async (req, res) => {
 
   try {
-    const { id, role } = req.user; // from token payload
+    const { id, role } = req.user; 
 
     let userData;
 
     if (role === "pharmacy") {
-      userData = await Pharmacy.findById(id).select("-password"); // exclude password
+      userData = await Pharmacy.findById(id).select("-passwordHash"); // exclude password
     } else if (role === "user") {
-      userData = await User.findById(id).select("-password");
+      userData = await User.findById(id).select("-passwordHash");
     } else {
       return res.status(400).json({ message: "Invalid role" });
     }
