@@ -1,0 +1,39 @@
+1. Apollo Pharmacy
+   Email: apollo.connaught@pharmacy.com
+   Password: ApolloPharmacy_password
+
+2. MedPlus Pharmacy
+   Email: medplus.dlf@pharmacy.com
+   Password: MedPlusPharmacy_password
+
+3. Wellness Pharmacy
+   Email: wellness.vasant@pharmacy.com
+   Password: WellnessPharmacy_password
+
+4. HealthKart Pharmacy
+   Email: healthkart.karolbagh@pharmacy.com
+   Password: HealthKartPharmacy_password
+
+5. Netmeds Pharmacy
+   Email: netmeds.noida@pharmacy.com
+   Password: NetmedsPharmacy_password
+
+6. PharmEasy Store
+   Email: pharmeasy.lajpat@pharmacy.com
+   Password: PharmEasyStore_password
+
+7. LifeCare Pharmacy
+   Email: lifecare.rohini@pharmacy.com
+   Password: LifeCarePharmacy_password
+
+8. MedStore Plus
+   Email: medstore.faridabad@pharmacy.com
+   Password: MedStorePlus_password
+
+9. QuickMed Pharmacy
+   Email: quickmed.dwarka@pharmacy.com
+   Password: QuickMedPharmacy_password
+
+10. CarePlus Pharmacy
+   Email: careplus.ghaziabad@pharmacy.com
+   Password: CarePlusPharmacy_password

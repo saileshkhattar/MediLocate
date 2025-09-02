@@ -18,21 +18,23 @@ import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
+import LocalPharmacyIcon from "@mui/icons-material/LocalPharmacy";
 import { useNavigate } from "react-router-dom";
 import AddMedicine from "../../Components/AddMedicine";
 import { useState, useEffect } from "react";
 import CompleteProfilePopup from "../../Components/CompleteProfileCard";
 import PharmacyNavbar from "../../Components/PharamcyNavabr";
 import { useAuth } from "../../Context/AuthContext";
+import axios from "axios";
 
 function PharmacyHome() {
-  const { user } = useAuth()
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  console.log(user._id)
+  console.log(user._id);
 
   const fetchProducts = async () => {
     try {
@@ -40,6 +42,7 @@ function PharmacyHome() {
         `http://localhost:5000/pharmacy/${user._id}/products`,
         { withCredentials: true }
       );
+      console.log(res.data.products);
       setProducts(res.data.products);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -58,9 +61,7 @@ function PharmacyHome() {
     fetchProducts(); // refresh list
   };
 
-  console.log(products)
-
-
+  console.log(products, "FWefwefwefwef");
 
   return (
     <>
@@ -214,7 +215,7 @@ function PharmacyHome() {
                   All Products
                 </Typography>
                 <Chip
-                  label="245 Items"
+                  label={`${products?.length || 0} Items`}
                   size="small"
                   sx={{ ml: "auto", bgcolor: "#e3f2fd", color: "#1976d2" }}
                 />
@@ -222,23 +223,184 @@ function PharmacyHome() {
               <Typography variant="body2" color="text.secondary" mb={2}>
                 Manage your complete inventory and product catalog
               </Typography>
-              <Box
-                sx={{
-                  minHeight: "80px",
-                  bgcolor: "#f8fafc",
-                  borderRadius: "8px",
-                  p: 2,
-                }}
-              >
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  textAlign="center"
-                  pt={2}
+
+              {/* Products List */}
+              {products && products.length > 0 ? (
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                  {products.slice(0, 5).map((product) => (
+                    <Card
+                      key={product._id}
+                      sx={{
+                        bgcolor: "white",
+                        border: "1px solid #e2e8f0",
+                        borderRadius: "8px",
+                        transition: "all 0.2s ease",
+                        cursor: "pointer",
+                        "&:hover": {
+                          bgcolor: "#f8fafc",
+                          borderColor: "#667eea",
+                          transform: "translateX(2px)",
+                        },
+                      }}
+                      onClick={() =>
+                        handleProductEdit && handleProductEdit(product)
+                      }
+                    >
+                      <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="space-between"
+                        >
+                          <Box display="flex" alignItems="center" gap={2}>
+                            <Box
+                              sx={{
+                                width: 40,
+                                height: 40,
+                                borderRadius: "8px",
+                                bgcolor: "#f0f9ff",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <LocalPharmacyIcon
+                                sx={{ color: "#0369a1", fontSize: "1.2rem" }}
+                              />
+                            </Box>
+                            <Box>
+                              <Typography
+                                variant="body1"
+                                fontWeight="600"
+                                color="#1a202c"
+                              >
+                                {product.name}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                {product.category} • {product.power}
+                              </Typography>
+                            </Box>
+                          </Box>
+
+                          <Box display="flex" alignItems="center" gap={2}>
+                            <Box textAlign="right">
+                              <Typography
+                                variant="body1"
+                                fontWeight="600"
+                                color="#1a202c"
+                              >
+                                {product.discountedPrice ? (
+                                  <>
+                                    ₹{product.discountedPrice}
+                                    <Typography
+                                      component="span"
+                                      variant="body2"
+                                      sx={{
+                                        textDecoration: "line-through",
+                                        color: "text.secondary",
+                                        ml: 0.5,
+                                      }}
+                                    >
+                                      ₹{product.price}
+                                    </Typography>
+                                  </>
+                                ) : (
+                                  `₹${product.price}`
+                                )}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                Stock: {product.quantity}
+                              </Typography>
+                            </Box>
+
+                            <Chip
+                              label={
+                                product.quantity > 10
+                                  ? "In Stock"
+                                  : product.quantity > 0
+                                  ? "Low Stock"
+                                  : "Out of Stock"
+                              }
+                              size="small"
+                              color={
+                                product.quantity > 10
+                                  ? "success"
+                                  : product.quantity > 0
+                                  ? "warning"
+                                  : "error"
+                              }
+                              sx={{ fontSize: "0.7rem", minWidth: "70px" }}
+                            />
+                          </Box>
+                        </Box>
+
+                        {product.discountedPrice && (
+                          <Box
+                            sx={{
+                              mt: 1,
+                              display: "flex",
+                              justifyContent: "flex-end",
+                            }}
+                          >
+                            <Chip
+                              label={`${Math.round(
+                                ((product.price - product.discountedPrice) /
+                                  product.price) *
+                                  100
+                              )}% OFF`}
+                              size="small"
+                              color="success"
+                              sx={{ fontSize: "0.65rem" }}
+                            />
+                          </Box>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+
+                  {products.length > 5 && (
+                    <Button
+                      variant="text"
+                      sx={{
+                        mt: 1,
+                        color: "#667eea",
+                        "&:hover": { bgcolor: "#f0f9ff" },
+                      }}
+                      onClick={() => navigate("/pharmacy/products")}
+                    >
+                      View All {products.length} Products
+                    </Button>
+                  )}
+                </Box>
+              ) : (
+                <Box
+                  sx={{
+                    minHeight: "80px",
+                    bgcolor: "#f8fafc",
+                    borderRadius: "8px",
+                    p: 2,
+                    textAlign: "center",
+                  }}
                 >
-                  Product list will be displayed here
-                </Typography>
-              </Box>
+                  <Typography variant="body2" color="text.secondary" pt={2}>
+                    No products found. Add your first product to get started.
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => setOpen(true)}
+                    sx={{ mt: 1, borderColor: "#667eea", color: "#667eea" }}
+                  >
+                    Add Product
+                  </Button>
+                </Box>
+              )}
             </CardContent>
           </Card>
 
@@ -550,7 +712,11 @@ function PharmacyHome() {
           Add Medicine
         </Button>
 
-        <AddMedicine open={open} handleClose={() => setOpen(false)} onSuccess={handleMedicineAdded} />
+        <AddMedicine
+          open={open}
+          handleClose={() => setOpen(false)}
+          onSuccess={handleMedicineAdded}
+        />
         <CompleteProfilePopup />
       </Box>
     </>

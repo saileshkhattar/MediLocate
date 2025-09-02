@@ -8,6 +8,7 @@ require("dotenv").config();
 const AuthRouter = require("./Routers/AuthRouter")
 const PharmacyRouter = require("./Routers/PharmacyRouter")
 const ProfileRouter = require("./Routers/ProfileRouter")
+const ProductRouter = require("./Routers/ProductRouter")
 
 
 const app = express();
@@ -27,6 +28,7 @@ app.get("/", (req, res)=>{
 app.use("/auth", AuthRouter)
 app.use("/pharmacy", PharmacyRouter);
 app.use("/profile", ProfileRouter)
+app.use("/product",ProductRouter )
 
 const PORT = 5000;
 mongoose

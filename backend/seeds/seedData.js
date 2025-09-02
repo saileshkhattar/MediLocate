@@ -7,12 +7,12 @@ const Pharmacy = require('../models/PharmacySchema');
 const PharmacyProfile = require('../models/PharmacyProfile');
 const Product = require('../models/Product');
 
+require("dotenv").config();
+
 // Connect to MongoDB
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/medilocate', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+    await mongoose.connect(process.env.Mongo_URL, {
     });
     console.log('MongoDB connected for seeding...');
   } catch (error) {

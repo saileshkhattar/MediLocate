@@ -21,6 +21,7 @@ import {
   InputAdornment,
   Container,
   Chip,
+  Paper,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
@@ -33,6 +34,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
+import useSearch from "../Hooks/Search";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -40,10 +42,12 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [accountMenuAnchor, setAccountMenuAnchor] = useState(null);
   const [searchValue, setSearchValue] = useState("");
+  const { query, setQuery, suggestions } = useSearch();
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
-  
-  const handleAccountMenuOpen = (event) => setAccountMenuAnchor(event.currentTarget);
+
+  const handleAccountMenuOpen = (event) =>
+    setAccountMenuAnchor(event.currentTarget);
   const handleAccountMenuClose = () => setAccountMenuAnchor(null);
 
   const handleLogout = () => {
@@ -72,17 +76,19 @@ const Navbar = () => {
 
   return (
     <>
-      <AppBar 
-        position="sticky" 
+      <AppBar
+        position="sticky"
         elevation={0}
         sx={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(255,255,255,0.1)',
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          backdropFilter: "blur(20px)",
+          borderBottom: "1px solid rgba(255,255,255,0.1)",
         }}
       >
         <Container maxWidth="xl">
-          <Toolbar sx={{ justifyContent: "space-between", minHeight: 72, py: 1 }}>
+          <Toolbar
+            sx={{ justifyContent: "space-between", minHeight: 72, py: 1 }}
+          >
             {/* Logo Section */}
             <Box display="flex" alignItems="center">
               <MuiLink
@@ -90,9 +96,9 @@ const Navbar = () => {
                 to="/"
                 underline="none"
                 sx={{
-                  color: 'white',
-                  display: 'flex',
-                  alignItems: 'center',
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
                   gap: 1,
                 }}
               >
@@ -100,26 +106,26 @@ const Navbar = () => {
                   sx={{
                     width: 40,
                     height: 40,
-                    borderRadius: '12px',
-                    background: 'rgba(255,255,255,0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backdropFilter: 'blur(10px)',
+                    borderRadius: "12px",
+                    background: "rgba(255,255,255,0.2)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backdropFilter: "blur(10px)",
                   }}
                 >
                   <Typography variant="h6" fontWeight="bold" color="white">
                     M
                   </Typography>
                 </Box>
-                <Typography 
-                  variant="h5" 
+                <Typography
+                  variant="h5"
                   fontWeight="700"
-                  sx={{ 
-                    background: 'linear-gradient(45deg, #fff 30%, #e3f2fd 90%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
+                  sx={{
+                    background: "linear-gradient(45deg, #fff 30%, #e3f2fd 90%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
                   }}
                 >
                   MediLocate
@@ -128,57 +134,111 @@ const Navbar = () => {
             </Box>
 
             {/* Search Bar - Desktop */}
-            <Box 
+            <Box
               component="form"
               onSubmit={handleSearch}
-              sx={{ 
+              sx={{
                 display: { xs: "none", md: "flex" },
                 flex: 1,
-                justifyContent: 'center',
+                justifyContent: "center",
                 mx: 4,
-                maxWidth: 500
+                maxWidth: 500,
               }}
             >
               <TextField
                 fullWidth
                 size="small"
                 placeholder="Search medicines, supplements..."
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 sx={{
-                  bgcolor: 'rgba(255,255,255,0.15)',
-                  borderRadius: '25px',
-                  backdropFilter: 'blur(10px)',
-                  '& fieldset': { 
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    borderRadius: '25px',
+                  bgcolor: "rgba(255,255,255,0.15)",
+                  borderRadius: "25px",
+                  backdropFilter: "blur(10px)",
+                  "& fieldset": {
+                    border: "1px solid rgba(255,255,255,0.3)",
+                    borderRadius: "25px",
                   },
-                  '& .MuiInputBase-input': {
-                    color: 'white',
-                    '&::placeholder': {
-                      color: 'rgba(255,255,255,0.7)',
+                  "& .MuiInputBase-input": {
+                    color: "white",
+                    "&::placeholder": {
+                      color: "rgba(255,255,255,0.7)",
                       opacity: 1,
                     },
                   },
-                  '&:hover fieldset': {
-                    borderColor: 'rgba(255,255,255,0.5)',
+                  "&:hover fieldset": {
+                    borderColor: "rgba(255,255,255,0.5)",
                   },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'rgba(255,255,255,0.7)',
+                  "&.Mui-focused fieldset": {
+                    borderColor: "rgba(255,255,255,0.7)",
                   },
                 }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <SearchIcon sx={{ color: 'rgba(255,255,255,0.7)' }} />
+                      <SearchIcon sx={{ color: "rgba(255,255,255,0.7)" }} />
                     </InputAdornment>
                   ),
                 }}
               />
+
+              {suggestions.length > 0 && (
+                <Paper
+                  sx={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 225,
+                    width: 450,
+                    zIndex: 999,
+                    maxHeight: 200,
+                    overflowY: "auto",
+                    borderRadius: "12px", // Add rounded corners
+                    mt: 1, // Add margin top for spacing
+                    border: "1px solid #e2e8f0", // Add subtle border
+                    boxShadow: "0 8px 25px rgba(0,0,0,0.15)", // Better shadow
+                  }}
+                >
+                  <List sx={{ py: 0 }}>
+                    {suggestions.map((s, i) => (
+                      <ListItem
+                        button
+                        key={i}
+                        onClick={() => navigate(`/search/${s.type}/${s.id}`)}
+                        sx={{
+                          py: 1.5,
+                          px: 3,
+                          borderBottom:
+                            i < suggestions.length - 1
+                              ? "1px solid #f1f5f9"
+                              : "none",
+                          "&:hover": { bgcolor: "#f8fafc" },
+                          "&:last-child": { borderRadius: "0 0 12px 12px" },
+                        }}
+                      >
+                        <ListItemText
+                          primary={s.name}
+                          sx={{
+                            "& .MuiListItemText-primary": {
+                              fontSize: "0.95rem",
+                              fontWeight: 500,
+                            },
+                          }}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                </Paper>
+              )}
             </Box>
 
             {/* Desktop Navigation */}
-            <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: 'center', gap: 1 }}>
+            <Box
+              sx={{
+                display: { xs: "none", md: "flex" },
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
               {navItems.map((item) => (
                 <Button
                   key={item.label}
@@ -186,14 +246,14 @@ const Navbar = () => {
                   component={Link}
                   to={item.path}
                   sx={{
-                    borderRadius: '12px',
+                    borderRadius: "12px",
                     px: 2,
                     py: 1,
                     fontWeight: 500,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      bgcolor: 'rgba(255,255,255,0.15)',
-                      transform: 'translateY(-1px)',
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      bgcolor: "rgba(255,255,255,0.15)",
+                      transform: "translateY(-1px)",
                     },
                   }}
                 >
@@ -202,12 +262,14 @@ const Navbar = () => {
               ))}
 
               {/* Action Icons */}
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 2 }}>
-                <IconButton 
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 1, ml: 2 }}
+              >
+                <IconButton
                   color="inherit"
                   sx={{
-                    borderRadius: '12px',
-                    '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' }
+                    borderRadius: "12px",
+                    "&:hover": { bgcolor: "rgba(255,255,255,0.15)" },
                   }}
                 >
                   <Badge badgeContent={2} color="error">
@@ -215,11 +277,11 @@ const Navbar = () => {
                   </Badge>
                 </IconButton>
 
-                <IconButton 
+                <IconButton
                   color="inherit"
                   sx={{
-                    borderRadius: '12px',
-                    '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' }
+                    borderRadius: "12px",
+                    "&:hover": { bgcolor: "rgba(255,255,255,0.15)" },
                   }}
                 >
                   <Badge badgeContent={3} color="error">
@@ -227,11 +289,11 @@ const Navbar = () => {
                   </Badge>
                 </IconButton>
 
-                <IconButton 
+                <IconButton
                   color="inherit"
                   sx={{
-                    borderRadius: '12px',
-                    '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' }
+                    borderRadius: "12px",
+                    "&:hover": { bgcolor: "rgba(255,255,255,0.15)" },
                   }}
                 >
                   <Badge badgeContent={1} color="error">
@@ -242,9 +304,14 @@ const Navbar = () => {
 
               {/* User Section */}
               {user ? (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, ml: 2 }}>
-                  <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-                    <Typography variant="body2" sx={{ opacity: 0.8, fontSize: '0.85rem' }}>
+                <Box
+                  sx={{ display: "flex", alignItems: "center", gap: 2, ml: 2 }}
+                >
+                  <Box sx={{ display: { xs: "none", lg: "block" } }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ opacity: 0.8, fontSize: "0.85rem" }}
+                    >
                       Welcome back
                     </Typography>
                     <Typography variant="body1" fontWeight="600">
@@ -255,17 +322,17 @@ const Navbar = () => {
                     onClick={handleAccountMenuOpen}
                     sx={{
                       p: 0,
-                      border: '2px solid rgba(255,255,255,0.3)',
-                      '&:hover': {
-                        border: '2px solid rgba(255,255,255,0.5)',
-                      }
+                      border: "2px solid rgba(255,255,255,0.3)",
+                      "&:hover": {
+                        border: "2px solid rgba(255,255,255,0.5)",
+                      },
                     }}
                   >
                     <Avatar
                       sx={{
-                        bgcolor: 'rgba(255,255,255,0.2)',
-                        color: 'white',
-                        fontWeight: 'bold',
+                        bgcolor: "rgba(255,255,255,0.2)",
+                        color: "white",
+                        fontWeight: "bold",
                         width: 40,
                         height: 40,
                       }}
@@ -275,19 +342,19 @@ const Navbar = () => {
                   </IconButton>
                 </Box>
               ) : (
-                <Box sx={{ display: 'flex', gap: 1, ml: 2 }}>
+                <Box sx={{ display: "flex", gap: 1, ml: 2 }}>
                   <Button
                     component={Link}
                     to="/user-auth"
                     variant="outlined"
                     sx={{
-                      borderColor: 'rgba(255,255,255,0.3)',
-                      color: 'white',
-                      borderRadius: '12px',
+                      borderColor: "rgba(255,255,255,0.3)",
+                      color: "white",
+                      borderRadius: "12px",
                       px: 3,
-                      '&:hover': {
-                        borderColor: 'rgba(255,255,255,0.5)',
-                        bgcolor: 'rgba(255,255,255,0.1)',
+                      "&:hover": {
+                        borderColor: "rgba(255,255,255,0.5)",
+                        bgcolor: "rgba(255,255,255,0.1)",
                       },
                     }}
                   >
@@ -298,12 +365,12 @@ const Navbar = () => {
                     to="/user-auth"
                     variant="contained"
                     sx={{
-                      bgcolor: 'rgba(255,255,255,0.2)',
-                      color: 'white',
-                      borderRadius: '12px',
+                      bgcolor: "rgba(255,255,255,0.2)",
+                      color: "white",
+                      borderRadius: "12px",
                       px: 3,
-                      '&:hover': {
-                        bgcolor: 'rgba(255,255,255,0.3)',
+                      "&:hover": {
+                        bgcolor: "rgba(255,255,255,0.3)",
                       },
                     }}
                   >
@@ -318,10 +385,10 @@ const Navbar = () => {
               color="inherit"
               edge="end"
               onClick={handleDrawerToggle}
-              sx={{ 
+              sx={{
                 display: { md: "none" },
-                borderRadius: '12px',
-                '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' }
+                borderRadius: "12px",
+                "&:hover": { bgcolor: "rgba(255,255,255,0.15)" },
               }}
             >
               <MenuIcon />
@@ -338,11 +405,11 @@ const Navbar = () => {
         PaperProps={{
           elevation: 8,
           sx: {
-            borderRadius: '12px',
+            borderRadius: "12px",
             mt: 1,
             minWidth: 200,
-            '& .MuiMenuItem-root': {
-              borderRadius: '8px',
+            "& .MuiMenuItem-root": {
+              borderRadius: "8px",
               mx: 1,
               my: 0.5,
             },
@@ -358,7 +425,7 @@ const Navbar = () => {
           Dashboard
         </MenuItem>
         <Divider sx={{ my: 1 }} />
-        <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={handleLogout} sx={{ color: "error.main" }}>
           <LogoutIcon sx={{ mr: 2 }} />
           Logout
         </MenuItem>
@@ -372,8 +439,8 @@ const Navbar = () => {
         PaperProps={{
           sx: {
             width: 280,
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            color: "white",
           },
         }}
       >
@@ -381,9 +448,16 @@ const Navbar = () => {
           <Typography variant="h6" fontWeight="bold" mb={2}>
             MediLocate
           </Typography>
-          
+
           {user && (
-            <Box sx={{ mb: 3, p: 2, bgcolor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }}>
+            <Box
+              sx={{
+                mb: 3,
+                p: 2,
+                bgcolor: "rgba(255,255,255,0.1)",
+                borderRadius: "12px",
+              }}
+            >
               <Typography variant="body2" sx={{ opacity: 0.8 }}>
                 Welcome
               </Typography>
@@ -400,16 +474,16 @@ const Navbar = () => {
             placeholder="Search..."
             sx={{
               mb: 3,
-              bgcolor: 'rgba(255,255,255,0.15)',
-              borderRadius: '12px',
-              '& fieldset': { 
-                border: '1px solid rgba(255,255,255,0.3)',
-                borderRadius: '12px',
+              bgcolor: "rgba(255,255,255,0.15)",
+              borderRadius: "12px",
+              "& fieldset": {
+                border: "1px solid rgba(255,255,255,0.3)",
+                borderRadius: "12px",
               },
-              '& .MuiInputBase-input': {
-                color: 'white',
-                '&::placeholder': {
-                  color: 'rgba(255,255,255,0.7)',
+              "& .MuiInputBase-input": {
+                color: "white",
+                "&::placeholder": {
+                  color: "rgba(255,255,255,0.7)",
                   opacity: 1,
                 },
               },
@@ -417,7 +491,7 @@ const Navbar = () => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon sx={{ color: 'rgba(255,255,255,0.7)' }} />
+                  <SearchIcon sx={{ color: "rgba(255,255,255,0.7)" }} />
                 </InputAdornment>
               ),
             }}
@@ -427,13 +501,13 @@ const Navbar = () => {
         <List sx={{ px: 2 }}>
           {navItems.map((item) => (
             <ListItem key={item.label} disablePadding sx={{ mb: 1 }}>
-              <ListItemButton 
-                component={Link} 
+              <ListItemButton
+                component={Link}
                 to={item.path}
                 onClick={handleDrawerToggle}
                 sx={{
-                  borderRadius: '12px',
-                  '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' },
+                  borderRadius: "12px",
+                  "&:hover": { bgcolor: "rgba(255,255,255,0.15)" },
                 }}
               >
                 <ListItemText primary={item.label} />
@@ -441,19 +515,19 @@ const Navbar = () => {
             </ListItem>
           ))}
 
-          <Divider sx={{ my: 2, borderColor: 'rgba(255,255,255,0.3)' }} />
+          <Divider sx={{ my: 2, borderColor: "rgba(255,255,255,0.3)" }} />
 
           {user ? (
             <ListItem disablePadding>
-              <ListItemButton 
+              <ListItemButton
                 onClick={() => {
                   handleLogout();
                   handleDrawerToggle();
                 }}
                 sx={{
-                  borderRadius: '12px',
-                  color: 'rgba(255,255,255,0.9)',
-                  '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' },
+                  borderRadius: "12px",
+                  color: "rgba(255,255,255,0.9)",
+                  "&:hover": { bgcolor: "rgba(255,255,255,0.15)" },
                 }}
               >
                 <LogoutIcon sx={{ mr: 2 }} />
@@ -462,13 +536,13 @@ const Navbar = () => {
             </ListItem>
           ) : (
             <ListItem disablePadding>
-              <ListItemButton 
-                component={Link} 
+              <ListItemButton
+                component={Link}
                 to="/user-auth"
                 onClick={handleDrawerToggle}
                 sx={{
-                  borderRadius: '12px',
-                  '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' },
+                  borderRadius: "12px",
+                  "&:hover": { bgcolor: "rgba(255,255,255,0.15)" },
                 }}
               >
                 <PersonIcon sx={{ mr: 2 }} />
