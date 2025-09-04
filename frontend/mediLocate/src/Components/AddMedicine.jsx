@@ -16,7 +16,7 @@ import {
   InputAdornment,
   Avatar,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import LocalPharmacyIcon from "@mui/icons-material/LocalPharmacy";
@@ -26,7 +26,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useAuth } from "../Context/AuthContext";
 
-export default function AddMedicineDialog({ open, handleClose }) {
+export default function AddMedicineDialog({ open, handleClose, product }) {
+  const isProduct = Boolean(product)
   const { user } = useAuth();
   console.log(user.name);
   const [formData, setFormData] = useState({
@@ -38,8 +39,24 @@ export default function AddMedicineDialog({ open, handleClose }) {
     quantity: "",
     image: null,
     fileType: "medicines",
-    pharmacyName: user.name,
+    pharmacyName: user?.name || "",
   });
+
+  // Auto-fill when product is provided/changes
+  useEffect(() => {
+    if (isProduct) {
+      setFormData((prev) => ({
+        ...prev,
+        name: product.name || "",
+        category: product.category || "",
+        power: product.power || "",
+        price: product.price || "",
+        discountedPrice: product.discountedPrice || "",
+        quantity: product.quantity || "",
+        image: product.image || null,
+      }));
+    }
+  }, [product]);
 
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -161,8 +178,8 @@ export default function AddMedicineDialog({ open, handleClose }) {
       data.append("price", formData.price);
       data.append("discountedPrice", formData.discountedPrice || "0");
       data.append("quantity", formData.quantity);
-      data.append("pharmacyName", formData.pharmacyName)
-      data.append("fileType",formData.fileType )
+      data.append("pharmacyName", formData.pharmacyName);
+      data.append("fileType", formData.fileType);
 
       if (formData.image) {
         data.append("image", formData.image);
@@ -170,12 +187,30 @@ export default function AddMedicineDialog({ open, handleClose }) {
 
       console.log(data);
 
-      const res = await axios.post("http://localhost:5000/pharmacy/add", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true, // ✅ allow cookies / auth tokens to be sent
-      });
+      if (product) {
+        // EDIT product
+        const res = await axios.put(
+          `http://localhost:5000/pharmacy/edit/${product._id}`,
+          data,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+            withCredentials: true,
+          }
+        );
+        console.log("Product updated:", res.data);
+      } else {
+        // ADD product
+        const res = await axios.post(
+          "http://localhost:5000/pharmacy/add",
+          data,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+            withCredentials: true,
+          }
+        );
+        console.log("Product added:", res.data);
+      }
 
-      console.log("Product added:", res.data);
       resetForm();
       handleClose();
     } catch (error) {
@@ -531,7 +566,7 @@ export default function AddMedicineDialog({ open, handleClose }) {
           ) : (
             <>
               <CheckCircleIcon sx={{ mr: 1, fontSize: "1.1rem" }} />
-              Add Medicine
+              {product ? "Update Medicine" : "Add MEDICINE"}
             </>
           )}
         </Button>

@@ -138,3 +138,43 @@ exports.getPharmacy = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+exports.editProduct = async (req, res) => {
+  console.log("dssad")
+  try {
+    const { id } = req.params;
+    console.log(id)
+
+    // build update object dynamically
+    const updateData = {
+      name: req.body.name,
+      category: req.body.category,
+      price: req.body.price,
+      power: req.body.power,
+      discountedPrice: req.body.discountedPrice,
+      quantity: req.body.quantity,
+      pharmacy: req.user.id,
+    };
+
+    if (req.file) {
+      updateData.image = req.file.filename;
+    }
+
+    console.log(updateData)
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    res.json({ success: true, product: updatedProduct });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Error updating product" });
+  }
+};

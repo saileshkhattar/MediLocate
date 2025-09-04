@@ -5,7 +5,7 @@ const ProductController = require("../Controllers/ProductController")
 const ProductRouter = express.Router();
 
 
-ProductRouter.get("/search/:id",authMiddleware, ProductController.getPharamcies)
+ProductRouter.get("/search/:id",authMiddleware,ProductController.getPharamcies)
 
 
 module.exports =  ProductRouter;

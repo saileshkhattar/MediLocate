@@ -39,8 +39,7 @@ const productSchema = new mongoose.Schema(
     },
     image: {
       type: String, // store relative path from multer
-      required: true,
-      default: "uploads/defaults/default-medicine.png",
+      default: "uploads/defaults/default_product.png",
     },
     pharmacy: {
       type: mongoose.Schema.Types.ObjectId,

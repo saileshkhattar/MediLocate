@@ -31,6 +31,7 @@ function PharmacyHome() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [editproduct, setEditproduct] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -57,11 +58,20 @@ function PharmacyHome() {
     }
   }, [user]);
 
+  const handleAddclick = () => {
+    setEditproduct(null);
+    setOpen(true);
+  };
+
+  const handleEditclick = (product) => {
+    console.log("FwefwefwefwEdit productefwe");
+    setEditproduct(product);
+    setOpen(true);
+  };
+
   const handleMedicineAdded = () => {
     fetchProducts(); // refresh list
   };
-
-  console.log(products, "FWefwefwefwef");
 
   return (
     <>
@@ -242,9 +252,7 @@ function PharmacyHome() {
                           transform: "translateX(2px)",
                         },
                       }}
-                      onClick={() =>
-                        handleProductEdit && handleProductEdit(product)
-                      }
+                      onClick={() => handleEditclick(product)}
                     >
                       <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
                         <Box
@@ -372,7 +380,7 @@ function PharmacyHome() {
                         color: "#667eea",
                         "&:hover": { bgcolor: "#f0f9ff" },
                       }}
-                      onClick={() => navigate("/pharmacy/products")}
+                      onClick={() => navigate(`/pharmacy/${user._id}`)}
                     >
                       View All {products.length} Products
                     </Button>
@@ -394,7 +402,7 @@ function PharmacyHome() {
                   <Button
                     variant="outlined"
                     size="small"
-                    onClick={() => setOpen(true)}
+                    onClick={handleAddclick}
                     sx={{ mt: 1, borderColor: "#667eea", color: "#667eea" }}
                   >
                     Add Product
@@ -688,7 +696,7 @@ function PharmacyHome() {
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={() => setOpen(true)}
+          onClick={handleAddclick}
           sx={{
             position: "fixed",
             bottom: { xs: 20, md: 30 },
@@ -714,8 +722,12 @@ function PharmacyHome() {
 
         <AddMedicine
           open={open}
-          handleClose={() => setOpen(false)}
+          handleClose={() => {
+            setOpen(false);
+            setEditproduct(null);
+          }}
           onSuccess={handleMedicineAdded}
+          product={editproduct}
         />
         <CompleteProfilePopup />
       </Box>

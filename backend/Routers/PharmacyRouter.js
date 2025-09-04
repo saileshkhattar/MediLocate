@@ -9,5 +9,6 @@ PharmacyRouter.post("/add",authMiddleware, upload.single("image"),PharmacyContro
 PharmacyRouter.get("/:id/products",authMiddleware,PharmacyController.getProducts )
 PharmacyRouter.get("/suggestions", authMiddleware, PharmacyController.getSuggestions);
 PharmacyRouter.get("/search/:id", authMiddleware, PharmacyController.getPharmacy)
+PharmacyRouter.put("/edit/:id", authMiddleware,upload.single("image"),PharmacyController.editProduct)
 
 module.exports =  PharmacyRouter;

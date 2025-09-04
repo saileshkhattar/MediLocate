@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -27,131 +27,78 @@ import {
   Select,
   Paper,
   Divider,
-} from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import TrendingDownIcon from '@mui/icons-material/TrendingDown';
-import WarningIcon from '@mui/icons-material/Warning';
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import WarningIcon from "@mui/icons-material/Warning";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 const PharmacyProductsPage = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [sortBy, setSortBy] = useState('newest');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
   const [currentPage, setCurrentPage] = useState(1);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const { id } = useParams();
+  const [products, setProducts] = useState([]);
 
   // Mock data - replace with actual API calls
-  const mockProducts = [
-    {
-      id: 1,
-      name: 'Paracetamol 500mg',
-      category: 'Medicine',
-      power: '500mg',
-      price: 45,
-      discountedPrice: 38,
-      quantity: 150,
-      image: '/api/placeholder/200/150',
-      status: 'active',
-      sales: 245,
-      views: 1200,
-      stockStatus: 'in-stock',
-      lastUpdated: '2024-01-15'
-    },
-    {
-      id: 2,
-      name: 'Vitamin D3 Supplements',
-      category: 'Supplements',
-      power: '1000 IU',
-      price: 320,
-      discountedPrice: null,
-      quantity: 8,
-      image: '/api/placeholder/200/150',
-      status: 'active',
-      sales: 89,
-      views: 450,
-      stockStatus: 'low-stock',
-      lastUpdated: '2024-01-14'
-    },
-    {
-      id: 3,
-      name: 'Digital Thermometer',
-      category: 'Equipment',
-      power: 'Digital',
-      price: 850,
-      discountedPrice: 750,
-      quantity: 0,
-      image: '/api/placeholder/200/150',
-      status: 'inactive',
-      sales: 45,
-      views: 230,
-      stockStatus: 'out-of-stock',
-      lastUpdated: '2024-01-13'
-    },
-    {
-      id: 4,
-      name: 'Antiseptic Liquid',
-      category: 'Personal Care',
-      power: '500ml',
-      price: 125,
-      discountedPrice: 110,
-      quantity: 75,
-      image: '/api/placeholder/200/150',
-      status: 'active',
-      sales: 167,
-      views: 890,
-      stockStatus: 'in-stock',
-      lastUpdated: '2024-01-15'
-    },
-    {
-      id: 5,
-      name: 'Baby Oil',
-      category: 'Baby Care',
-      power: '200ml',
-      price: 180,
-      discountedPrice: null,
-      quantity: 45,
-      image: '/api/placeholder/200/150',
-      status: 'active',
-      sales: 78,
-      views: 340,
-      stockStatus: 'in-stock',
-      lastUpdated: '2024-01-12'
-    },
-    {
-      id: 6,
-      name: 'Aspirin 325mg',
-      category: 'Medicine',
-      power: '325mg',
-      price: 65,
-      discountedPrice: 55,
-      quantity: 200,
-      image: '/api/placeholder/200/150',
-      status: 'active',
-      sales: 312,
-      views: 1580,
-      stockStatus: 'in-stock',
-      lastUpdated: '2024-01-16'
-    }
-  ];
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/pharmacy/${id}/products`,
+        { withCredentials: true }
+      );
 
-  const categories = ['all', 'Medicine', 'Supplements', 'Equipment', 'Personal Care', 'Baby Care', 'Other'];
+      setProducts(res.data.products);
+      console.log(products)
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchProducts();
+    }
+  }, [id]);
+
+  const categories = [
+    "all",
+    "Medicine",
+    "Supplements",
+    "Equipment",
+    "Personal Care",
+    "Baby Care",
+    "Other",
+  ];
 
   const getStockStatusColor = (status) => {
     switch (status) {
-      case 'in-stock': return 'success';
-      case 'low-stock': return 'warning';
-      case 'out-of-stock': return 'error';
-      default: return 'default';
+      case "out-of-stock":
+        return "error"; // red
+      case "low-stock":
+        return "warning"; // orange/yellow
+      default:
+        return "success"; // green
     }
+  };
+
+  const getStockStatus = (quantity) => {
+    if (quantity === 0) return "out-of-stock";
+    if (quantity > 0 && quantity < 10) return "low-stock";
+    return "in-stock";
   };
 
   const getDiscountPercentage = (price, discountedPrice) => {
@@ -176,32 +123,34 @@ const PharmacyProductsPage = () => {
 
   const handleDeleteConfirm = () => {
     // Handle product deletion
-    console.log('Deleting product:', selectedProduct);
+    console.log("Deleting product:", selectedProduct);
     setDeleteDialogOpen(false);
     setSelectedProduct(null);
   };
 
-  const filteredProducts = mockProducts.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         product.category.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "all" || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   const stats = {
-    total: mockProducts.length,
-    active: mockProducts.filter(p => p.status === 'active').length,
-    lowStock: mockProducts.filter(p => p.stockStatus === 'low-stock').length,
-    outOfStock: mockProducts.filter(p => p.stockStatus === 'out-of-stock').length,
+    total: products.length,
+    lowStock: products.filter((p) => p.quantity > 0 && p.quantity < 10).length,
+    active: products.filter((p) => p.quantity > 10).length,
+    outOfStock: products.filter((p) => p.quantity === 0).length,
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#f8fafc' }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "#f8fafc" }}>
       {/* Header Section */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          color: "white",
           py: 4,
         }}
       >
@@ -216,7 +165,13 @@ const PharmacyProductsPage = () => {
           {/* Stats Cards */}
           <Grid container spacing={3} sx={{ mt: 2 }}>
             <Grid item xs={6} sm={3}>
-              <Paper sx={{ p: 2, bgcolor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+              <Paper
+                sx={{
+                  p: 2,
+                  bgcolor: "rgba(255,255,255,0.1)",
+                  backdropFilter: "blur(10px)",
+                }}
+              >
                 <Typography variant="h4" fontWeight="bold" color="white">
                   {stats.total}
                 </Typography>
@@ -226,7 +181,13 @@ const PharmacyProductsPage = () => {
               </Paper>
             </Grid>
             <Grid item xs={6} sm={3}>
-              <Paper sx={{ p: 2, bgcolor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+              <Paper
+                sx={{
+                  p: 2,
+                  bgcolor: "rgba(255,255,255,0.1)",
+                  backdropFilter: "blur(10px)",
+                }}
+              >
                 <Typography variant="h4" fontWeight="bold" color="white">
                   {stats.active}
                 </Typography>
@@ -236,7 +197,13 @@ const PharmacyProductsPage = () => {
               </Paper>
             </Grid>
             <Grid item xs={6} sm={3}>
-              <Paper sx={{ p: 2, bgcolor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+              <Paper
+                sx={{
+                  p: 2,
+                  bgcolor: "rgba(255,255,255,0.1)",
+                  backdropFilter: "blur(10px)",
+                }}
+              >
                 <Typography variant="h4" fontWeight="bold" color="white">
                   {stats.lowStock}
                 </Typography>
@@ -246,7 +213,13 @@ const PharmacyProductsPage = () => {
               </Paper>
             </Grid>
             <Grid item xs={6} sm={3}>
-              <Paper sx={{ p: 2, bgcolor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+              <Paper
+                sx={{
+                  p: 2,
+                  bgcolor: "rgba(255,255,255,0.1)",
+                  backdropFilter: "blur(10px)",
+                }}
+              >
                 <Typography variant="h4" fontWeight="bold" color="white">
                   {stats.outOfStock}
                 </Typography>
@@ -261,7 +234,7 @@ const PharmacyProductsPage = () => {
 
       <Container maxWidth="lg" sx={{ py: 4 }}>
         {/* Filters and Search */}
-        <Paper elevation={2} sx={{ p: 3, mb: 4, borderRadius: '16px' }}>
+        <Paper elevation={2} sx={{ p: 3, mb: 4, borderRadius: "16px" }}>
           <Grid container spacing={3} alignItems="center">
             <Grid item xs={12} md={4}>
               <TextField
@@ -272,13 +245,13 @@ const PharmacyProductsPage = () => {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <SearchIcon sx={{ color: '#667eea' }} />
+                      <SearchIcon sx={{ color: "#667eea" }} />
                     </InputAdornment>
                   ),
                 }}
                 sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '12px',
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "12px",
                   },
                 }}
               />
@@ -290,11 +263,11 @@ const PharmacyProductsPage = () => {
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   label="Category"
-                  sx={{ borderRadius: '12px' }}
+                  sx={{ borderRadius: "12px" }}
                 >
                   {categories.map((category) => (
                     <MenuItem key={category} value={category}>
-                      {category === 'all' ? 'All Categories' : category}
+                      {category === "all" ? "All Categories" : category}
                     </MenuItem>
                   ))}
                 </Select>
@@ -307,7 +280,7 @@ const PharmacyProductsPage = () => {
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                   label="Sort By"
-                  sx={{ borderRadius: '12px' }}
+                  sx={{ borderRadius: "12px" }}
                 >
                   <MenuItem value="newest">Newest First</MenuItem>
                   <MenuItem value="oldest">Oldest First</MenuItem>
@@ -324,9 +297,9 @@ const PharmacyProductsPage = () => {
                 fullWidth
                 startIcon={<FilterListIcon />}
                 sx={{
-                  borderRadius: '12px',
-                  borderColor: '#667eea',
-                  color: '#667eea',
+                  borderRadius: "12px",
+                  borderColor: "#667eea",
+                  color: "#667eea",
                   py: 1.5,
                 }}
               >
@@ -342,43 +315,52 @@ const PharmacyProductsPage = () => {
             <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
               <Card
                 sx={{
-                  borderRadius: '16px',
-                  overflow: 'hidden',
-                  transition: 'all 0.3s ease',
-                  border: '1px solid #e2e8f0',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: '0 12px 40px rgba(0,0,0,0.12)',
+                  borderRadius: "16px",
+                  overflow: "hidden",
+                  transition: "all 0.3s ease",
+                  border: "1px solid #e2e8f0",
+                  minWidth: { lg: "350px", md: "250px" },
+                  "&:hover": {
+                    transform: "translateY(-4px)",
+                    boxShadow: "0 12px 40px rgba(0,0,0,0.12)",
                   },
                 }}
               >
-                <Box sx={{ position: 'relative' }}>
+                <Box sx={{ position: "relative" }}>
                   <CardMedia
                     component="img"
                     height="160"
-                    image={product.image}
+                    image={`http://localhost:5000/${product.image}`}
                     alt={product.name}
-                    sx={{ bgcolor: '#f8fafc' }}
+                    sx={{ bgcolor: "#f8fafc" }}
                   />
-                  
-                  {/* Status Badges */}
-                  <Box sx={{ position: 'absolute', top: 8, left: 8 }}>
+
+                  {/* Status Badges  */}
+                  <Box sx={{ position: "absolute", top: 8, left: 8 }}>
                     <Chip
-                      label={product.stockStatus.replace('-', ' ')}
-                      color={getStockStatusColor(product.stockStatus)}
+                      label={getStockStatus(product.quantity).replace("-", " ")}
+                      color={getStockStatusColor(
+                        getStockStatus(product.quantity)
+                      )}
                       size="small"
-                      sx={{ fontSize: '0.7rem', fontWeight: 600 }}
+                      sx={{ fontSize: "0.7rem", fontWeight: 600 }}
                     />
                   </Box>
 
                   {/* Discount Badge */}
-                  {getDiscountPercentage(product.price, product.discountedPrice) && (
-                    <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
+                  {getDiscountPercentage(
+                    product.price,
+                    product.discountedPrice
+                  ) && (
+                    <Box sx={{ position: "absolute", top: 8, right: 55 }}>
                       <Chip
-                        label={`${getDiscountPercentage(product.price, product.discountedPrice)}% OFF`}
+                        label={`${getDiscountPercentage(
+                          product.price,
+                          product.discountedPrice
+                        )}% OFF`}
                         color="success"
                         size="small"
-                        sx={{ fontSize: '0.7rem', fontWeight: 600 }}
+                        sx={{ fontSize: "0.7rem", fontWeight: 600 }}
                       />
                     </Box>
                   )}
@@ -386,11 +368,11 @@ const PharmacyProductsPage = () => {
                   {/* Menu Button */}
                   <IconButton
                     sx={{
-                      position: 'absolute',
+                      position: "absolute",
                       top: 8,
-                      right: product.discountedPrice ? 80 : 8,
-                      bgcolor: 'rgba(255,255,255,0.9)',
-                      '&:hover': { bgcolor: 'white' },
+                      right: 8,
+                      bgcolor: "rgba(255,255,255,0.9)",
+                      "&:hover": { bgcolor: "white" },
                     }}
                     onClick={(e) => handleMenuOpen(e, product)}
                   >
@@ -399,17 +381,30 @@ const PharmacyProductsPage = () => {
                 </Box>
 
                 <CardContent sx={{ p: 2 }}>
-                  <Typography variant="h6" fontWeight="600" mb={1} sx={{ fontSize: '1rem' }}>
+                  <Typography
+                    variant="h1"
+                    fontWeight="600"
+                    mb={1}
+                    sx={{ fontSize: "1rem" }}
+                  >
                     {product.name}
                   </Typography>
-                  
+
                   <Box display="flex" alignItems="center" mb={1}>
                     <Chip
                       label={product.category}
                       size="small"
-                      sx={{ bgcolor: '#e3f2fd', color: '#1976d2', fontSize: '0.7rem' }}
+                      sx={{
+                        bgcolor: "#e3f2fd",
+                        color: "#1976d2",
+                        fontSize: "0.7rem",
+                      }}
                     />
-                    <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{ ml: 1 }}
+                    >
                       {product.power}
                     </Typography>
                   </Box>
@@ -423,8 +418,8 @@ const PharmacyProductsPage = () => {
                       <Typography
                         variant="body2"
                         sx={{
-                          textDecoration: 'line-through',
-                          color: 'text.secondary',
+                          textDecoration: "line-through",
+                          color: "text.secondary",
                           ml: 1,
                         }}
                       >
@@ -434,15 +429,24 @@ const PharmacyProductsPage = () => {
                   </Box>
 
                   {/* Stock and Stats */}
-                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    mb={2}
+                  >
                     <Box display="flex" alignItems="center">
-                      <InventoryIcon sx={{ fontSize: '1rem', color: '#64748b', mr: 0.5 }} />
+                      <InventoryIcon
+                        sx={{ fontSize: "1rem", color: "#64748b", mr: 0.5 }}
+                      />
                       <Typography variant="caption" color="text.secondary">
                         Stock: {product.quantity}
                       </Typography>
                     </Box>
                     <Box display="flex" alignItems="center">
-                      <VisibilityIcon sx={{ fontSize: '1rem', color: '#64748b', mr: 0.5 }} />
+                      <VisibilityIcon
+                        sx={{ fontSize: "1rem", color: "#64748b", mr: 0.5 }}
+                      />
                       <Typography variant="caption" color="text.secondary">
                         {product.views}
                       </Typography>
@@ -450,17 +454,29 @@ const PharmacyProductsPage = () => {
                   </Box>
 
                   {/* Sales Trend */}
-                  <Box display="flex" alignItems="center" justifyContent="center">
-                    <Box display="flex" alignItems="center" sx={{ 
-                      bgcolor: product.sales > 100 ? '#e8f5e9' : '#fff3e0', 
-                      borderRadius: '8px', 
-                      px: 1, 
-                      py: 0.5 
-                    }}>
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      sx={{
+                        bgcolor: product.sales > 100 ? "#e8f5e9" : "#fff3e0",
+                        borderRadius: "8px",
+                        px: 1,
+                        py: 0.5,
+                      }}
+                    >
                       {product.sales > 100 ? (
-                        <TrendingUpIcon sx={{ fontSize: '1rem', color: '#2e7d32', mr: 0.5 }} />
+                        <TrendingUpIcon
+                          sx={{ fontSize: "1rem", color: "#2e7d32", mr: 0.5 }}
+                        />
                       ) : (
-                        <TrendingDownIcon sx={{ fontSize: '1rem', color: '#f57c00', mr: 0.5 }} />
+                        <TrendingDownIcon
+                          sx={{ fontSize: "1rem", color: "#f57c00", mr: 0.5 }}
+                        />
                       )}
                       <Typography variant="caption" fontWeight="600">
                         {product.sales} sold
@@ -482,8 +498,8 @@ const PharmacyProductsPage = () => {
             color="primary"
             size="large"
             sx={{
-              '& .MuiPaginationItem-root': {
-                borderRadius: '12px',
+              "& .MuiPaginationItem-root": {
+                borderRadius: "12px",
               },
             }}
           />
@@ -494,13 +510,13 @@ const PharmacyProductsPage = () => {
       <Fab
         color="primary"
         sx={{
-          position: 'fixed',
+          position: "fixed",
           bottom: 24,
           right: 24,
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          '&:hover': {
-            background: 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)',
-            transform: 'scale(1.1)',
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          "&:hover": {
+            background: "linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)",
+            transform: "scale(1.1)",
           },
         }}
       >
@@ -513,20 +529,20 @@ const PharmacyProductsPage = () => {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
         PaperProps={{
-          sx: { borderRadius: '12px', minWidth: 150 },
+          sx: { borderRadius: "12px", minWidth: 150 },
         }}
       >
         <MenuItem onClick={handleMenuClose}>
-          <EditIcon sx={{ mr: 1, fontSize: '1.1rem' }} />
+          <EditIcon sx={{ mr: 1, fontSize: "1.1rem" }} />
           Edit Product
         </MenuItem>
         <MenuItem onClick={handleMenuClose}>
-          <VisibilityIcon sx={{ mr: 1, fontSize: '1.1rem' }} />
+          <VisibilityIcon sx={{ mr: 1, fontSize: "1.1rem" }} />
           View Details
         </MenuItem>
         <Divider />
-        <MenuItem onClick={handleDeleteClick} sx={{ color: 'error.main' }}>
-          <DeleteIcon sx={{ mr: 1, fontSize: '1.1rem' }} />
+        <MenuItem onClick={handleDeleteClick} sx={{ color: "error.main" }}>
+          <DeleteIcon sx={{ mr: 1, fontSize: "1.1rem" }} />
           Delete Product
         </MenuItem>
       </Menu>
@@ -535,22 +551,23 @@ const PharmacyProductsPage = () => {
       <Dialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
-        PaperProps={{ sx: { borderRadius: '16px' } }}
+        PaperProps={{ sx: { borderRadius: "16px" } }}
       >
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center' }}>
-          <WarningIcon sx={{ color: 'error.main', mr: 1 }} />
+        <DialogTitle sx={{ display: "flex", alignItems: "center" }}>
+          <WarningIcon sx={{ color: "error.main", mr: 1 }} />
           Delete Product
         </DialogTitle>
         <DialogContent>
           <Typography>
-            Are you sure you want to delete "{selectedProduct?.name}"? This action cannot be undone.
+            Are you sure you want to delete "{selectedProduct?.name}"? This
+            action cannot be undone.
           </Typography>
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
           <Button
             onClick={() => setDeleteDialogOpen(false)}
             variant="outlined"
-            sx={{ borderRadius: '8px' }}
+            sx={{ borderRadius: "8px" }}
           >
             Cancel
           </Button>
@@ -558,7 +575,7 @@ const PharmacyProductsPage = () => {
             onClick={handleDeleteConfirm}
             variant="contained"
             color="error"
-            sx={{ borderRadius: '8px' }}
+            sx={{ borderRadius: "8px" }}
           >
             Delete
           </Button>
